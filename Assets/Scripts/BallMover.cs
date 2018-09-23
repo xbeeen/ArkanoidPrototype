@@ -29,7 +29,7 @@ public class BallMover : MonoBehaviour
 	
 	private void Start()
 	{
-		SetValidDirection(Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up) * Vector3.forward);
+		SetValidDirection(Quaternion.Euler(0, Random.Range(0, 360), 0) * Vector3.forward);
 	}
 	
 #if UNITY_EDITOR
@@ -94,10 +94,11 @@ public class BallMover : MonoBehaviour
 		var contactPoint = contact.point;
 		var bounds = collision.collider.bounds;
 		var centerPoint = bounds.center;
-		var crossProduct = Vector3.Cross(Vector3.up, contactNormal);
-		var dotProduct = Vector3.Dot(crossProduct, (contactPoint - centerPoint).normalized);
-		var sign = Mathf.Sign(dotProduct);
-		var reflectedDirection = Vector3.Slerp(contactNormal, sign * crossProduct, Mathf.Abs(dotProduct));
+		var contactTangent = Vector3.Cross(Vector3.up, contactNormal);
+		var sign = Mathf.Sign(Vector3.Dot(contactTangent, (contactPoint - centerPoint).normalized));
+		var scalar = Vector3.Dot(contactNormal, (contactPoint - centerPoint).normalized);
+		var limitDirection = Quaternion.Euler(0, -20, 0) * contactTangent * sign;
+		var reflectedDirection = Vector3.Slerp(contactNormal, limitDirection, Mathf.Abs(scalar));
 		var recalculatedContactNormal = (reflectedDirection - _currentDirection).normalized;
 		
 		SetValidDirection(Vector3.Reflect(_currentDirection, recalculatedContactNormal));
