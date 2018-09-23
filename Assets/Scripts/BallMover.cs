@@ -97,7 +97,7 @@ public class BallMover : MonoBehaviour
 		var contactTangent = Vector3.Cross(Vector3.up, contactNormal);
 		var sign = Mathf.Sign(Vector3.Dot(contactTangent, (contactPoint - centerPoint).normalized));
 		var scalar = Vector3.Dot(contactNormal, (contactPoint - centerPoint).normalized);
-		var limitDirection = Quaternion.Euler(0, -20, 0) * contactTangent * sign;
+		var limitDirection = Quaternion.Euler(0, -sign * 10, 0) * contactTangent * sign;
 		var reflectedDirection = Vector3.Slerp(contactNormal, limitDirection, Mathf.Abs(scalar));
 		var recalculatedContactNormal = (reflectedDirection - _currentDirection).normalized;
 		
